@@ -1,0 +1,364 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Игра "Валет"</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container-fluid mt-3">
+    <div class="row">
+      <div class="col-12 text-center mb-4">
+        <h1 class="display-4">Игра "Валет"</h1>
+        <p class="lead">Угадайте масть своей карты, чтобы выжить</p>
+      </div>
+    </div>
+
+    <!-- Основное меню подключения -->
+    <!-- Переключатель темы -->
+    <div class="theme-toggle-container">
+      <button class="theme-toggle-btn" id="themeToggle">
+        <i class="fas fa-moon" id="themeIcon"></i>
+      </button>
+    </div>
+
+    <!-- Фоновая анимация карты -->
+    <div class="card-background">
+      <div class="card-container-huge" id="backgroundCard">
+        <div class="card-inner-huge">
+          <div class="card-face-huge card-front-huge">
+            <div class="jack-figure">
+              <div class="jack-body">
+                <div class="jack-suit-symbol">♥</div>
+              </div>
+            </div>
+            <div class="card-corner corner-top-left">
+              <div class="card-value-huge">J</div>
+              <div class="card-suit-huge">♥</div>
+            </div>
+            <div class="card-corner corner-bottom-right">
+              <div class="card-value-huge">J</div>
+              <div class="card-suit-huge">♥</div>
+            </div>
+          </div>
+          <div class="card-face-huge card-back-huge">
+            <div class="jack-figure-evil">
+              <div class="jack-head-evil">
+                <div class="jack-eyes-evil">
+                  <div class="jack-eye-evil left"></div>
+                  <div class="jack-eye-evil right"></div>
+                </div>
+                <div class="jack-mouth-evil"></div>
+              </div>
+              <div class="jack-body-evil"></div>
+            </div>
+            <div class="card-corner corner-top-left">
+            </div>
+            <div class="card-corner corner-bottom-right">
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Основное меню -->
+    <div class="row" id="mainMenu">
+      <div class="col-lg-6 offset-lg-3">
+        <div class="card menu-card">
+          <div class="card-header">
+            <h3>Подключение к игре</h3>
+          </div>
+          <div class="card-body text-center">
+            <div class="mb-4">
+              <h5 class="text-muted">Выберите действие:</h5>
+            </div>
+
+            <div class="d-grid gap-3 col-10 mx-auto">
+              <button class="btn btn-success btn-lg" id="createServerBtn">
+                <i class="fas fa-plus-circle me-2"></i>
+                Создать сервер
+              </button>
+              <button class="btn btn-primary btn-lg" id="connectToServerBtn">
+                <i class="fas fa-plug me-2"></i>
+                Присоединиться к серверу
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Контент игры -->
+    <div class="row d-none" id="gameScreen">
+      <div class="col-lg-8">
+        <div class="card mb-4">
+          <div class="card-header d-flex justify-content-between align-items-center">
+            <h3>Игровой процесс</h3>
+            <div>
+              <span class="badge bg-primary">Комната: <span id="roomIdDisplay">ID</span></span>
+              <span class="badge bg-info ms-2">Раунд: <span id="roundNumber">1</span></span>
+              <span class="badge bg-info ms-2">Фаза: <span id="phaseName">Обсуждение</span></span>
+              <span class="badge bg-warning ms-2">Таймер: <span id="timer">120</span>s</span>
+            </div>
+          </div>
+          <div class="card-body">
+            <div class="row mb-4">
+              <div class="col-md-6">
+                <div class="card bg-light p-3 text-center">
+                  <h5>Ваша карта</h5>
+                  <div class="h3" id="myCard">??? (Свой цвет не виден)</div>
+                  <div class="mt-2">
+                    <span class="badge bg-danger" id="isJackBadge" style="display: none;">Вы Червовый Валет!</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="col-md-6">
+                <div class="card p-3">
+                  <h5>Ваша догадка</h5>
+                  <div class="d-flex gap-2 mb-3" id="guessingArea" style="display: none;">
+                    <select class="form-select" id="suitGuess">
+                      <option value="">Выберите масть</option>
+                      <option value="♠">Пики</option>
+                      <option value="♥">Червы</option>
+                      <option value="♦">Бубны</option>
+                      <option value="♣">Трефы</option>
+                    </select>
+                    <button class="btn btn-success" id="submitGuessBtn">Отправить догадку</button>
+                  </div>
+                  <p class="text-muted small" id="guessingInstruction">В конце раунда угадайте масть своей карты</p>
+                </div>
+              </div>
+            </div>
+
+            <div id="votingArea" class="d-none">
+              <h5>Голосование</h5>
+              <p>Выберите игрока, которого хотите исключить:</p>
+              <div id="votingOptions" class="d-grid gap-2">
+                <!-- Варианты голосования будут добавлены здесь -->
+              </div>
+            </div>
+
+            <div id="guessResultsArea" class="d-none">
+              <h5>Результаты угадывания</h5>
+              <div id="guessResultsList"></div>
+            </div>
+
+            <div id="playersArea">
+              <h5>Другие игроки</h5>
+              <div id="playersList" class="row">
+                <!-- Игроки будут отображаться здесь -->
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-lg-4">
+        <div class="card h-100">
+          <div class="card-header">
+            <h3>Чат игроков</h3>
+          </div>
+          <div class="card-body d-flex flex-column p-0">
+            <div id="chatMessages" class="flex-grow-1 p-3" style="height: 400px; overflow-y: auto;">
+              <!-- Сообщения чата будут отображаться здесь -->
+              <div class="text-center text-muted">Сообщений пока нет...</div>
+            </div>
+            <div class="p-3 border-top">
+              <div class="input-group">
+                <input type="text" class="form-control" id="chatInput" placeholder="Введите сообщение..." maxlength="200">
+                <button class="btn btn-primary" id="sendChatBtn">Отправить</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="row d-none" id="gameOverScreen">
+      <div class="col-lg-6 offset-lg-3">
+        <div class="card text-center">
+          <div class="card-body">
+            <h2 class="card-title">Игра окончена!</h2>
+            <p class="card-text fs-4" id="gameResult">Результат будет здесь</p>
+            <button class="btn btn-primary" onclick="location.reload()">Играть снова</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модальное окно создания сервера -->
+  <div class="modal fade" id="createServerModal" tabindex="-1" aria-labelledby="createServerModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="createServerModalLabel"><i class="fas fa-plus-circle me-2 text-success"></i>Создать сервер</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <form id="createServerForm">
+            <div class="mb-3">
+              <label for="createPlayerName" class="form-label">Ваше имя:</label>
+              <input type="text" class="form-control" id="createPlayerName" placeholder="Введите имя" required>
+            </div>
+            <div class="mb-3">
+              <label for="createRoomId" class="form-label">ID комнаты:</label>
+              <input type="text" class="form-control" id="createRoomId" placeholder="Оставить пустым для автоматического создания">
+              <div class="form-text">Если оставить пустым, будет создан уникальный ID</div>
+            </div>
+            <div class="mb-3">
+              <label for="createRoomPassword" class="form-label">Пароль комнаты:</label>
+              <input type="password" class="form-control" id="createRoomPassword" placeholder="Введите пароль комнаты" required>
+            </div>
+            <div class="mb-3">
+              <label for="createMinPlayers" class="form-label">Минимальное количество игроков:</label>
+              <input type="number" class="form-control" id="createMinPlayers" min="3" max="10" value="6" required>
+            </div>
+            <div class="mb-3">
+              <label for="discussionTimer" class="form-label">Время обсуждения (секунды):</label>
+              <input type="number" class="form-control" id="discussionTimer" min="30" max="600" value="120" required>
+            </div>
+            <div class="mb-3">
+              <label for="guessingTimer" class="form-label">Время угадывания (секунды):</label>
+              <input type="number" class="form-control" id="guessingTimer" min="10" max="300" value="60" required>
+            </div>
+          </form>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Отмена</button>
+          <button type="button" class="btn btn-success" id="confirmCreateServerBtn">Создать сервер</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модальное окно присоединения к комнате -->
+  <div class="modal fade" id="connectToServerModal" tabindex="-1" aria-labelledby="connectToServerModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="connectToServerModalLabel"><i class="fas fa-plug me-2 text-primary"></i>Присоединиться к комнате</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <div id="roomListSection">
+            <h5>Доступные комнаты:</h5>
+            <div id="roomList" class="list-group mb-3">
+              <!-- Список комнат будет добавляться здесь -->
+              <div class="list-group-item text-center text-muted py-3">
+                <i class="fas fa-spinner fa-spin me-2"></i>Загрузка списка комнат...
+              </div>
+            </div>
+            <div class="d-grid gap-2">
+              <button class="btn btn-outline-primary" id="refreshRoomsBtn">
+                <i class="fas fa-sync me-2"></i>Обновить список
+              </button>
+            </div>
+          </div>
+
+          <div id="passwordSection" class="d-none">
+            <h5>Введите пароль для комнаты: <span id="passwordRoomIdDisplay"></span></h5>
+            <form id="passwordForm">
+              <div class="mb-3">
+                <label for="connectPlayerName" class="form-label">Ваше имя:</label>
+                <input type="text" class="form-control" id="connectPlayerName" placeholder="Введите имя" required>
+              </div>
+              <div class="mb-3">
+                <label for="roomPassword" class="form-label">Пароль комнаты:</label>
+                <input type="password" class="form-control" id="roomPassword" placeholder="Введите пароль" required>
+              </div>
+              <input type="hidden" id="hiddenRoomId" value="">
+            </form>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" id="backToListBtn" style="display: none;">Назад к списку</button>
+          <button type="button" class="btn btn-primary" id="confirmPasswordBtn">Присоединиться</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Модальное окно для приватного чата -->
+  <div class="modal fade" id="privateChatModal" tabindex="-1">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title">Приватный чат с <span id="chattingWith"></span></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+        </div>
+        <div class="modal-body">
+          <div id="privateChatMessages" class="mb-3" style="height: 300px; overflow-y: auto;">
+            <!-- Сообщения приватного чата будут здесь -->
+          </div>
+          <div class="input-group">
+            <input type="text" class="form-control" id="privateChatInput" placeholder="Введите сообщение...">
+            <button class="btn btn-primary" id="sendPrivateChatBtn">Отправить</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Вкладка правил игры -->
+  <div class="rules-tab">
+    <button class="rules-btn" data-bs-toggle="modal" data-bs-target="#rulesModal">
+      <i class="fas fa-book"></i> Правила игры
+    </button>
+  </div>
+
+  <!-- Модальное окно с правилами -->
+  <div class="modal fade" id="rulesModal" tabindex="-1" aria-labelledby="rulesModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="rulesModalLabel">Правила игры "Валет"</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          <h6>Цель игры:</h6>
+          <p>Угадать масть своей карты, чтобы выжить в игре.</p>
+
+          <h6>Количество игроков:</h6>
+          <p>От 3 до 10 человек.</p>
+
+          <h6>Ваша карта:</h6>
+          <p>Каждый игрок получает случайную карту, которую видят другие игроки, но не видите вы сами. Масти: пики, бубны, трефы, червы.</p>
+
+          <h6>Особый персонаж:</h6>
+          <p>Если вы Червовый Валет, вы знаете, что именно эта карта у вас.</p>
+
+          <h6>Фазы игры:</h6>
+          <ul>
+            <li><strong>Фаза обсуждения:</strong> Игроки общаются в общем чате и пытаются выяснить, какая у них карта</li>
+            <li><strong>Фаза угадывания:</strong> Игроки угадывают масть своей карты</li>
+          </ul>
+
+          <h6>Приватный чат:</h6>
+          <p>Вы можете общаться с другим игроком в приватном чате, нажав на его имя в списке игроков.</p>
+
+          <h6>Победа:</h6>
+          <p>Побеждает последний оставшийся игрок или игрок с определенной картой, в зависимости от настроек игры.</p>
+
+          <h6>Важные особенности:</h6>
+          <ul>
+            <li>В конце раунда вы должны угадать масть своей карты</li>
+            <li>Если вы неправильно угадали масть, вы покидаете игру</li>
+            <li>Все игроки видят вашу карту, кроме вас самого</li>
+          </ul>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Закрыть</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="client_new.js"></script>
+</body>
+</html>
