@@ -1,6 +1,6 @@
 // Адрес сервера - измените эту константу, чтобы подключаться к другому серверу
 const SERVER_ADDRESS = (window.location.protocol === 'https:' ? 'wss://' : 'ws://') + window.
-     location.host;
+location.host;
 
 class GameClient {
   constructor() {
